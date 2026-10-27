@@ -1,0 +1,237 @@
+{% extends "base_dashboard.html" %}
+
+{% block title %}User Profile - MessMate{% endblock %}
+
+{% block greeting %}
+Account &amp; Profile Settings 👤
+{% endblock %}
+
+{% block greeting_subtitle %}
+Manage your student profile, view impact statistics, and update security credentials
+{% endblock %}
+
+{% block content %}
+<div class="profile-page-container" style="max-width: 860px; margin: 0 auto;">
+
+    <!-- =================================================================== -->
+    <!-- 1. PROFILE HEADER CARD                                              -->
+    <!-- =================================================================== -->
+    <section class="profile-header-card">
+        <!-- Avatar Circle with Initials -->
+        <div class="profile-avatar-circle" aria-hidden="true">
+            {% if user and user.name %}
+                {% set name_parts = user.name.split() %}
+                {{ (name_parts[0][0] + (name_parts[-1][0] if name_parts|length > 1 else '')) | upper }}
+            {% else %}
+                MM
+            {% endif %}
+        </div>
+
+        <!-- Name, Email, Member Since -->
+        <div style="flex: 1; min-width: 0;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.35rem;">
+                <h1 style="font-size: 1.65rem; font-weight: 800; color: var(--text-heading); margin: 0;">
+                    {{ user.name if user else current_user.name }}
+                </h1>
+                <span class="status-pill status-available-badge" style="font-size: 0.72rem; padding: 0.2rem 0.6rem;">
+                    Active Student
+                </span>
+            </div>
+
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin: 0 0 0.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                <span>{{ user.email if user else current_user.email }}</span>
+            </p>
+
+            <p style="color: var(--text-light); font-size: 0.85rem; margin: 0; display: flex; align-items: center; gap: 0.4rem;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <span>Member since: {{ user.created_at.strftime('%B %d, %Y') if (user and user.created_at) else 'Recently' }}</span>
+            </p>
+        </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 2. STATS ROW (3 Cards: Posted, Claimed, Completed)                  -->
+    <!-- =================================================================== -->
+    <section class="profile-stats-grid" aria-label="Personal sharing impact">
+        <div class="profile-stat-box">
+            <div style="color: var(--success-green); margin-bottom: 0.35rem;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+            </div>
+            <div class="profile-stat-num">{{ posted_count if posted_count is defined else 0 }}</div>
+            <div class="profile-stat-title">Cards Posted</div>
+        </div>
+
+        <div class="profile-stat-box">
+            <div style="color: var(--warning-amber); margin-bottom: 0.35rem;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+            </div>
+            <div class="profile-stat-num">{{ claimed_count if claimed_count is defined else 0 }}</div>
+            <div class="profile-stat-title">Cards Claimed</div>
+        </div>
+
+        <div class="profile-stat-box">
+            <div style="color: var(--primary-blue); margin-bottom: 0.35rem;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+            <div class="profile-stat-num">{{ completed_count if completed_count is defined else 0 }}</div>
+            <div class="profile-stat-title">Completed Handouts</div>
+        </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 3. EDIT PROFILE & SECURITY FORMS                                    -->
+    <!-- =================================================================== -->
+    <div style="display: flex; flex-direction: column; gap: 2rem;">
+
+        <!-- Edit Basic Information Form -->
+        <section class="modern-card">
+            <div class="card-header-styled">
+                <h2>Edit Personal Information</h2>
+                <p>Update your public campus name and contact email address.</p>
+            </div>
+
+            <form method="POST" action="{{ url_for('profile') }}" id="profile-info-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                <div class="form-group">
+                    <label for="name" class="form-label">
+                        Full Name <span class="required-star" aria-hidden="true">*</span>
+                    </label>
+                    <input type="text"
+                           id="name"
+                           name="name"
+                           class="form-control"
+                           value="{{ user.name if user else current_user.name }}"
+                           minlength="2"
+                           maxlength="100"
+                           required>
+                    <div class="form-hint">
+                        <span>This name is shown to other students when you post or claim meals.</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="form-label">
+                        College Email Address <span class="required-star" aria-hidden="true">*</span>
+                    </label>
+                    <input type="email"
+                           id="email"
+                           name="email"
+                           class="form-control"
+                           value="{{ user.email if user else current_user.email }}"
+                           required>
+                    <div class="form-hint">
+                        <span>Used for account login and notifications.</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color);">
+                    <button type="submit" class="btn-dashboard-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                        <span>Update Profile</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Change Password Section -->
+        <section class="modern-card">
+            <div class="card-header-styled">
+                <h2>Change Password</h2>
+                <p>Enhance account security with a strong, private password.</p>
+            </div>
+
+            <form method="POST" action="{{ url_for('profile') }}" id="password-change-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <!-- Retain current name and email so backend handler updates seamlessly -->
+                <input type="hidden" name="name" value="{{ user.name if user else current_user.name }}">
+                <input type="hidden" name="email" value="{{ user.email if user else current_user.email }}">
+
+                <div class="form-group">
+                    <label for="current_password" class="form-label">
+                        Current Password <span class="required-star" aria-hidden="true">*</span>
+                    </label>
+                    <input type="password"
+                           id="current_password"
+                           name="current_password"
+                           class="form-control"
+                           placeholder="••••••••"
+                           required>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;" class="form-row-2col">
+                    <div class="form-group">
+                        <label for="new_password" class="form-label">
+                            New Password <span class="required-star" aria-hidden="true">*</span>
+                        </label>
+                        <input type="password"
+                               id="new_password"
+                               name="new_password"
+                               class="form-control"
+                               placeholder="Min. 6 characters"
+                               minlength="6"
+                               required>
+                        <div class="form-hint">
+                            <span>Must be at least 6 characters long.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirm_new_password" class="form-label">
+                            Confirm New Password <span class="required-star" aria-hidden="true">*</span>
+                        </label>
+                        <input type="password"
+                               id="confirm_new_password"
+                               name="confirm_new_password"
+                               class="form-control"
+                               placeholder="Re-enter new password"
+                               minlength="6"
+                               required>
+                        <div class="form-error" id="pwd-mismatch-error">Passwords do not match.</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color);">
+                    <button type="submit" class="btn-dashboard-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        <span>Change Password</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const pwdForm = document.getElementById('password-change-form');
+    const newPwd = document.getElementById('new_password');
+    const confirmPwd = document.getElementById('confirm_new_password');
+    const mismatchError = document.getElementById('pwd-mismatch-error');
+
+    function checkPasswordsMatch() {
+        if (newPwd.value && confirmPwd.value && newPwd.value !== confirmPwd.value) {
+            mismatchError.style.display = 'block';
+            confirmPwd.style.borderColor = 'var(--error-red)';
+            return false;
+        } else {
+            mismatchError.style.display = 'none';
+            confirmPwd.style.borderColor = '';
+            return true;
+        }
+    }
+
+    confirmPwd.addEventListener('input', checkPasswordsMatch);
+    newPwd.addEventListener('input', checkPasswordsMatch);
+
+    pwdForm.addEventListener('submit', (e) => {
+        if (!checkPasswordsMatch()) {
+            e.preventDefault();
+            confirmPwd.focus();
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,380 @@
+{% extends "base.html" %}
+
+{% block title %}MessMate | Share Your Unused Meals, Feed a Fellow Student{% endblock %}
+
+{% block content %}
+<!-- Site Navigation Bar -->
+<header class="site-header" id="navbar">
+    <nav class="nav-container" aria-label="Primary Website Navigation">
+        <!-- Brand Logo -->
+        <div class="nav-brand-wrapper">
+            <a href="{{ url_for('home') }}" class="nav-brand" aria-label="MessMate Home">
+                <div class="nav-logo-badge">
+                    <img src="{{ url_for('static', filename='images/messmate-logo.png') }}" alt="MessMate Logo" class="nav-logo-img">
+                </div>
+                <span class="nav-brand-text">Mess<span class="text-blue">Mate</span></span>
+            </a>
+        </div>
+
+        <!-- Desktop Navigation Links -->
+        <div class="nav-links-desktop">
+            <a href="#hero" class="nav-anchor">Home</a>
+            <a href="#how-it-works" class="nav-anchor">How It Works</a>
+            <a href="#benefits" class="nav-anchor">Features</a>
+            <a href="#about" class="nav-anchor">About</a>
+            <a href="{{ url_for('login') }}" class="nav-anchor nav-login-link">Login</a>
+            <a href="{{ url_for('register') }}" class="btn btn-primary nav-cta-btn">
+                <span>Get Started</span>
+            </a>
+        </div>
+
+        <!-- Mobile Hamburger Toggle -->
+        <button type="button" class="nav-hamburger" id="nav-toggle-btn" aria-label="Toggle navigation menu" aria-expanded="false">
+            <span class="hamburger-bar"></span>
+            <span class="hamburger-bar"></span>
+            <span class="hamburger-bar"></span>
+        </button>
+    </nav>
+
+    <!-- Mobile Dropdown Navigation -->
+    <div class="nav-mobile-menu" id="mobile-menu">
+        <a href="#hero" class="mobile-nav-link" onclick="closeMobileMenu()">Home</a>
+        <a href="#how-it-works" class="mobile-nav-link" onclick="closeMobileMenu()">How It Works</a>
+        <a href="#benefits" class="mobile-nav-link" onclick="closeMobileMenu()">Features</a>
+        <a href="#about" class="mobile-nav-link" onclick="closeMobileMenu()">About</a>
+        <div class="mobile-nav-actions">
+            <a href="{{ url_for('login') }}" class="btn btn-outline mobile-btn">Login</a>
+            <a href="{{ url_for('register') }}" class="btn btn-primary mobile-btn">Get Started Free</a>
+        </div>
+    </div>
+</header>
+
+<main id="main-content">
+    <!-- Hero Section -->
+    <section class="hero-section" id="hero">
+        <div class="container hero-container">
+            <!-- Left Column: Copy & Actions -->
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-dot"></span>
+                    <span>Hostel Dining &amp; Food Sharing Network</span>
+                </div>
+                <h1 class="hero-title">
+                    Share Your Unused Meals, <span class="text-blue">Feed a Fellow Student</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Heading out for the weekend or skipping hostel food? Don't let your prepaid meal credits go to waste. MessMate connects hostel residents to seamlessly exchange dining tokens through secure QR codes.
+                </p>
+                <div class="hero-actions">
+                    <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg hero-cta">
+                        <span>Get Started Free</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                    <a href="#how-it-works" class="btn btn-outline btn-lg hero-secondary">
+                        <span>Learn More</span>
+                    </a>
+                </div>
+                <div class="hero-perks">
+                    <div class="perk-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span>100% Free For Campus Students</span>
+                    </div>
+                    <div class="perk-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span>Instant QR Verification at Mess Counters</span>
+                    </div>
+                    <div class="perk-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span>Verified Student-to-Student Platform</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Visual Composition -->
+            <div class="hero-visual">
+                <div class="visual-glow-backdrop"></div>
+                <div class="hero-plate-composition">
+                    <!-- Central Plate Image with Shadow & Glow -->
+                    <div class="plate-wrapper">
+                        <img src="{{ url_for('static', filename='images/plate.png') }}" alt="Dining plate visual representation" class="hero-plate-img">
+                    </div>
+
+                    <!-- Cutlery Accents -->
+                    <div class="cutlery-accent cutlery-fork" aria-hidden="true">
+                        <img src="{{ url_for('static', filename='images/fork.png') }}" alt="" class="cutlery-img">
+                    </div>
+                    <div class="cutlery-accent cutlery-spoon" aria-hidden="true">
+                        <img src="{{ url_for('static', filename='images/spoon.png') }}" alt="" class="cutlery-img">
+                    </div>
+
+                    <!-- Floating Card: Active Meal -->
+                    <div class="floating-card floating-card-top" aria-hidden="true">
+                        <div class="floating-card-icon bg-blue-subtle">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
+                        </div>
+                        <div class="floating-card-text">
+                            <span class="floating-label">Dining Hall &bull; Dinner</span>
+                            <span class="floating-value text-green">Available to Claim</span>
+                        </div>
+                    </div>
+
+                    <!-- Floating Card: QR Verified -->
+                    <div class="floating-card floating-card-bottom" aria-hidden="true">
+                        <div class="floating-card-icon bg-green-subtle">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                        </div>
+                        <div class="floating-card-text">
+                            <span class="floating-label">QR Token Generated</span>
+                            <span class="floating-value">Verified at Mess Gate</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="section how-it-works-section" id="how-it-works">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="section-tag">How It Works</span>
+                <h2 class="section-title">Meal Sharing in 3 Simple Steps</h2>
+                <div class="section-title-underline"></div>
+                <p class="section-subtitle">
+                    Sharing an extra dining credit or grabbing a meal token takes less than 30 seconds.
+                </p>
+            </div>
+
+            <div class="steps-grid">
+                <!-- Step 1: Post a Meal -->
+                <article class="step-card">
+                    <div class="step-header">
+                        <span class="step-number">01</span>
+                        <div class="step-icon-box">
+                            <!-- Utensils SVG icon -->
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M18 2v6a3 3 0 0 1-3 3 3 3 0 0 1-3-3V2"></path>
+                                <path d="M15 11v11"></path>
+                                <path d="M6 2v20"></path>
+                                <path d="M9 2c0 2.5-1.5 4.5-3 4.5S3 4.5 3 2"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="step-title">Post a Meal</h3>
+                    <p class="step-desc">
+                        Skipping breakfast, lunch, or dinner? Specify your hostel mess hall, meal category, and pickup window to publish your meal card in seconds.
+                    </p>
+                </article>
+
+                <!-- Step 2: Claim a Meal -->
+                <article class="step-card">
+                    <div class="step-header">
+                        <span class="step-number">02</span>
+                        <div class="step-icon-box">
+                            <!-- Hand-pointer SVG icon -->
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"></path>
+                                <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"></path>
+                                <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="step-title">Claim a Meal</h3>
+                    <p class="step-desc">
+                        Students looking for a meal can browse live available cards and reserve an open meal credit with a single tap before the cutoff time.
+                    </p>
+                </article>
+
+                <!-- Step 3: Verify with QR -->
+                <article class="step-card">
+                    <div class="step-header">
+                        <span class="step-number">03</span>
+                        <div class="step-icon-box">
+                            <!-- QR code SVG icon -->
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                                <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                                <line x1="17" y1="7" x2="17.01" y2="7"></line>
+                                <line x1="7" y1="17" x2="7.01" y2="17"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="step-title">Verify with QR</h3>
+                    <p class="step-desc">
+                        A unique dynamic QR verification code is generated. Show the QR at the mess entry or redemption desk for quick, contactless dining access.
+                    </p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features / Benefits Section -->
+    <section class="section benefits-section" id="benefits">
+        <div class="container">
+            <div class="section-header text-center">
+                <span class="section-tag">Key Advantages</span>
+                <h2 class="section-title">Built Specially for Campus Hostels</h2>
+                <div class="section-title-underline"></div>
+                <p class="section-subtitle">
+                    Designed to tackle food waste in hostel messes while empowering student welfare and community connection.
+                </p>
+            </div>
+
+            <div class="benefits-grid">
+                <!-- Benefit 1: Zero Food Waste -->
+                <article class="benefit-card">
+                    <div class="benefit-icon bg-blue-subtle">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>
+                    </div>
+                    <h3 class="benefit-title">Zero Food Waste</h3>
+                    <p class="benefit-text">
+                        Hostel messes cook according to registered headcounts. Sharing your unused meal credit ensures that fresh, hot food never ends up in the disposal bin.
+                    </p>
+                </article>
+
+                <!-- Benefit 2: Quick & Easy -->
+                <article class="benefit-card">
+                    <div class="benefit-icon bg-blue-subtle">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    </div>
+                    <h3 class="benefit-title">Quick &amp; Easy</h3>
+                    <p class="benefit-text">
+                        Post or claim a meal in less than 30 seconds. A lightweight, responsive interface designed for busy students in between classes and labs.
+                    </p>
+                </article>
+
+                <!-- Benefit 3: Secure QR Verification -->
+                <article class="benefit-card">
+                    <div class="benefit-icon bg-blue-subtle">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    </div>
+                    <h3 class="benefit-title">Secure QR Verification</h3>
+                    <p class="benefit-text">
+                        Single-use cryptographic tokens prevent double claims and confusion, ensuring legitimate redemptions that mess authorities can trust.
+                    </p>
+                </article>
+
+                <!-- Benefit 4: Campus Community -->
+                <article class="benefit-card">
+                    <div class="benefit-icon bg-blue-subtle">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    </div>
+                    <h3 class="benefit-title">Campus Community</h3>
+                    <p class="benefit-text">
+                        Connect with hostelites across wings and batches. Build a culture of mutual support, neighborly care, and collective sustainability.
+                    </p>
+                </article>
+
+                <!-- Benefit 5: Real-Time Availability -->
+                <article class="benefit-card">
+                    <div class="benefit-icon bg-blue-subtle">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    </div>
+                    <h3 class="benefit-title">Real-Time Availability</h3>
+                    <p class="benefit-text">
+                        Instant status indicators update immediately when meals are posted or claimed, so you always know what dining options are ready for pickup.
+                    </p>
+                </article>
+
+                <!-- Benefit 6: Free to Use -->
+                <article class="benefit-card">
+                    <div class="benefit-icon bg-blue-subtle">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><line x1="12" y1="18" x2="12" y2="20"></line><line x1="12" y1="4" x2="12" y2="6"></line></svg>
+                    </div>
+                    <h3 class="benefit-title">Free to Use</h3>
+                    <p class="benefit-text">
+                        No subscription fees, platform charges, or hidden paywalls. MessMate is a student-first initiative built by students, for students.
+                    </p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Responsible Sharing Section -->
+    <section class="section community-section" id="about">
+        <div class="container">
+            <div class="community-box">
+                <div class="community-icon-header">
+                    <div class="icon-ring">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    </div>
+                </div>
+                <h2 class="community-title">Responsible Sharing on Campus</h2>
+                <div class="section-title-underline center"></div>
+                <p class="community-desc">
+                    MessMate was conceived to ensure that prepaid hostel dining food is never wasted when students travel, dine out, or attend campus events. By participating in responsible sharing, you respect hostel kitchen staff efforts, help peers, and foster campus sustainability. Please claim only meals you intend to consume, and post surplus credits early so peers have ample time to redeem them.
+                </p>
+                <div class="community-actions">
+                    <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                        <span>Join MessMate Community</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Dark Navy Footer -->
+<footer class="site-footer">
+    <div class="container footer-container">
+        <div class="footer-top">
+            <!-- Brand Column -->
+            <div class="footer-brand-column">
+                <a href="{{ url_for('home') }}" class="footer-brand" aria-label="MessMate Home">
+                    <img src="{{ url_for('static', filename='images/messmate-logo.png') }}" alt="MessMate Logo" class="footer-logo-img">
+                </a>
+                <p class="footer-desc">
+                    A peer-to-peer hostel food sharing platform dedicated to eliminating campus food waste and ensuring every student has access to warm, nutritious meals.
+                </p>
+            </div>
+
+            <!-- Quick Links Columns -->
+            <div class="footer-nav-columns">
+                <div class="footer-column">
+                    <h4 class="footer-heading">Platform</h4>
+                    <ul class="footer-links">
+                        <li><a href="#hero">Home</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#benefits">Features &amp; Benefits</a></li>
+                        <li><a href="#about">About &amp; Community</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h4 class="footer-heading">Student Access</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ url_for('login') }}">Student Login</a></li>
+                        <li><a href="{{ url_for('register') }}">Create Account</a></li>
+                        <li><a href="{{ url_for('dashboard') }}">Live Meal Board</a></li>
+                        <li><a href="{{ url_for('post_card') }}">Post a Meal Card</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h4 class="footer-heading">Guidelines</h4>
+                    <ul class="footer-links">
+                        <li><a href="#about">Responsible Sharing</a></li>
+                        <li><a href="#how-it-works">QR Verification FAQ</a></li>
+                        <li><a href="#hero">Hostel Mess Rules</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Bottom Bar -->
+        <div class="footer-bottom">
+            <p class="copyright-text">&copy; 2026 MessMate. Built for students, powered by campus community.</p>
+            <div class="footer-bottom-links">
+                <span>Campus Zero Waste Initiative</span>
+                &bull;
+                <span>Hostel Dining Partner</span>
+            </div>
+        </div>
+    </div>
+</footer>
+{% endblock %}

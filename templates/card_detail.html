@@ -1,0 +1,315 @@
+{% extends "base_dashboard.html" %}
+
+{% block title %}{{ card.title }} - Meal Details - MessMate{% endblock %}
+
+{% block greeting %}
+Meal Card Details 🍱
+{% endblock %}
+
+{% block greeting_subtitle %}
+Detailed information and handover verification token
+{% endblock %}
+
+{% block content %}
+<div class="card-detail-container" style="max-width: 1000px; margin: 0 auto;">
+
+    <!-- Top Navigation Breadcrumbs / Back links -->
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--text-muted);">
+            <a href="{{ url_for('dashboard') }}" style="display: inline-flex; align-items: center; gap: 0.35rem; color: var(--text-muted);">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                <span>Dashboard</span>
+            </a>
+            <span>&rsaquo;</span>
+            <a href="{{ url_for('my_cards') }}" style="color: var(--text-muted);">My Cards</a>
+            <span>&rsaquo;</span>
+            <span style="color: var(--text-heading); font-weight: 600;">Card #{{ card.id }}</span>
+        </div>
+
+        <a href="{{ url_for('dashboard') }}" class="btn-dashboard-secondary" style="font-size: 0.875rem; padding: 0.45rem 0.85rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            <span>Back to Dashboard</span>
+        </a>
+    </div>
+
+    <!-- Main Detail Grid (Left: Card Details, Right: QR/Verification Actions) -->
+    <div class="detail-grid">
+        
+        <!-- =============================================================== -->
+        <!-- LEFT COLUMN: Main Card Details                                  -->
+        <!-- =============================================================== -->
+        <section class="modern-card" style="margin-bottom: 0;">
+            <!-- Header Badges -->
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                <span class="meal-type-badge meal-type-{{ card.meal_type | lower }}" style="font-size: 0.85rem; padding: 0.35rem 0.85rem;">
+                    {% if card.meal_type | lower == 'breakfast' %}🍳 Breakfast
+                    {% elif card.meal_type | lower == 'lunch' %}🍱 Lunch
+                    {% elif card.meal_type | lower == 'dinner' %}🍲 Dinner
+                    {% elif card.meal_type | lower == 'snack' %}🥪 Snack
+                    {% else %}{{ card.meal_type | title }}
+                    {% endif %}
+                </span>
+
+                <span class="status-pill status-{{ card.status }}-badge" style="font-size: 0.825rem; padding: 0.35rem 0.95rem;">
+                    Status: {{ card.status | title }}
+                </span>
+            </div>
+
+            <!-- Title -->
+            <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text-heading); margin-bottom: 1rem; line-height: 1.3;">
+                {{ card.title }}
+            </h1>
+
+            <!-- Full Description -->
+            <div style="margin-bottom: 1.75rem;">
+                <h3 style="font-size: 0.9rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 0.5rem;">Description</h3>
+                <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 1.15rem; font-size: 0.95rem; line-height: 1.6; color: var(--text-body);">
+                    {{ card.description if card.description else 'No description was provided for this meal card.' }}
+                </div>
+            </div>
+
+            <!-- Detailed Key-Value Grid -->
+            <div class="detail-info-list">
+                <div class="detail-item">
+                    <span class="detail-label">Pickup Location</span>
+                    <span class="detail-value" style="display: flex; align-items: center; gap: 0.35rem;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--primary-blue);"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                        {{ card.pickup_location }}
+                    </span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Available Quantity</span>
+                    <span class="detail-value">
+                        {{ card.quantity }} {{ 'portion' if card.quantity == 1 else 'portions' }}
+                    </span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Posted By</span>
+                    <span class="detail-value" style="display: flex; align-items: center; gap: 0.35rem;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--text-light);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        {{ card.poster.name if card.poster else 'Hostel Student' }}
+                        {% if current_user.is_authenticated and card.posted_by == current_user.id %}
+                            <span class="your-post-badge" style="font-size: 0.7rem; padding: 0.1rem 0.4rem;">You</span>
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Available Until</span>
+                    <span class="detail-value" style="color: {% if card.is_expired() %}var(--error-red){% else %}var(--text-heading){% endif %};">
+                        {{ card.expiry_time.strftime('%b %d, %Y - %I:%M %p') if card.expiry_time else 'N/A' }}
+                    </span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Posted On</span>
+                    <span class="detail-value">
+                        {{ card.created_at.strftime('%b %d, %Y - %I:%M %p') if card.created_at else 'N/A' }}
+                    </span>
+                </div>
+
+                {% if card.claimed_by and card.claimer %}
+                    <div class="detail-item">
+                        <span class="detail-label">Claimed By</span>
+                        <span class="detail-value" style="color: var(--warning-amber);">
+                            {{ card.claimer.name }}
+                            {% if current_user.is_authenticated and card.claimed_by == current_user.id %}
+                                <span class="tab-badge" style="background: var(--warning-bg); color: var(--warning-amber);">You</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                {% endif %}
+
+                {% if card.completed_at %}
+                    <div class="detail-item">
+                        <span class="detail-label">Handover Completed</span>
+                        <span class="detail-value" style="color: var(--success-green);">
+                            {{ card.completed_at.strftime('%b %d, %Y - %I:%M %p') }}
+                        </span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Primary Claim CTA if available and user is not poster -->
+            {% if card.status == 'available' and current_user.is_authenticated and card.posted_by != current_user.id %}
+                <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                    <form method="POST" action="{{ url_for('claim_card', card_id=card.id) }}" onsubmit="return confirm('Are you sure you want to claim this meal? Once claimed, you should collect it before expiry.');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                        <button type="submit" class="btn-dashboard-primary btn-w-full" style="padding: 0.85rem; font-size: 1.05rem;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"></path></svg>
+                            <span>Claim This Meal Card Now</span>
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
+
+            <!-- If poster and available, allow deleting -->
+            {% if card.status == 'available' and current_user.is_authenticated and card.posted_by == current_user.id %}
+                <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end;">
+                    <form method="POST" action="{{ url_for('delete_card', card_id=card.id) }}" onsubmit="return confirm('Are you sure you want to delete this meal posting?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                        <button type="submit" class="btn-dashboard-danger" style="font-size: 0.9rem;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            <span>Delete Meal Posting</span>
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- RIGHT COLUMN: QR Code / Handover Actions                        -->
+        <!-- =============================================================== -->
+        <aside class="detail-sidebar-actions">
+
+            {% if card.qr_image_filename %}
+                {% set is_card_participant = (current_user.id == card.posted_by or current_user.id == card.claimed_by) %}
+                <div class="qr-code-card meal-qr-upload-card">
+                    <h3 class="meal-qr-heading">Meal QR Screenshot</h3>
+                    {% if is_card_participant %}
+                        <div class="meal-qr-image-frame">
+                            <img src="{{ url_for('meal_qr_image', card_id=card.id) }}" alt="Meal QR screenshot uploaded by the poster">
+                        </div>
+                        <p class="meal-qr-caption">This QR screenshot is available to you as a meal participant.</p>
+                    {% elif card.status in ['claimed', 'completed'] %}
+                        <div class="meal-qr-image-frame meal-qr-image-blurred">
+                            <img src="{{ url_for('meal_qr_image', card_id=card.id) }}" alt="Blurred QR screenshot for a claimed meal">
+                            <span>{{ 'COMPLETED' if card.status == 'completed' else 'CLAIMED' }}</span>
+                        </div>
+                        <p class="meal-qr-caption">This meal has already been claimed, so its QR is blurred for other students.</p>
+                    {% else %}
+                        <div class="meal-qr-locked-message">Claim this meal to reveal its QR screenshot.</div>
+                    {% endif %}
+                </div>
+            {% endif %}
+            
+            <!-- SCENARIO 1: Card is claimed and current user is CLAIMER -->
+            {% if card.status == 'claimed' and current_user.is_authenticated and card.claimed_by == current_user.id %}
+                <div class="qr-code-card">
+                    <div style="display: inline-flex; padding: 0.4rem 0.8rem; background: var(--blue-light); color: var(--primary-blue); border-radius: 9999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 1rem;">
+                        Your Claim Token
+                    </div>
+
+                    <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-heading); margin-bottom: 0.5rem;">
+                        Verification QR Code
+                    </h3>
+                    
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+                        Show this QR code to <strong>{{ card.poster.name if card.poster else 'the meal poster' }}</strong> when picking up your food.
+                    </p>
+
+                    {% if qr_code %}
+                        <div class="qr-image-wrapper">
+                            <img src="{{ qr_code }}" alt="QR Code for Meal Handover Verification">
+                        </div>
+                    {% endif %}
+
+                    <div style="margin-top: 1rem;">
+                        <span style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; display: block; margin-bottom: 0.25rem;">
+                            Direct Verification Link:
+                        </span>
+                        {% set verify_full_url = url_for('verify_claim', claim_token=card.claim_token, _external=True) %}
+                        <div class="verification-url-box" id="verify-url-text">{{ verify_full_url }}</div>
+                        <button type="button" class="btn-dashboard-secondary btn-w-full" onclick="copyVerifyUrl('{{ verify_full_url }}', this)" style="padding: 0.45rem; font-size: 0.825rem;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            <span id="copy-btn-text">Copy Verification Link</span>
+                        </button>
+                    </div>
+
+                    <div style="margin-top: 1.25rem; padding: 0.75rem; background: var(--warning-bg); border: 1px solid #FDE68A; border-radius: 8px; font-size: 0.8rem; color: #92400E; text-align: left;">
+                        <strong>Security Note:</strong> Do not share this QR code or link with anyone except the food poster upon receiving your meal portions.
+                    </div>
+                </div>
+
+            <!-- SCENARIO 2: Card is claimed and current user is POSTER -->
+            {% elif card.status == 'claimed' and current_user.is_authenticated and card.posted_by == current_user.id %}
+                <div class="modern-card" style="text-align: center;">
+                    <div style="width: 52px; height: 52px; border-radius: 50%; background: var(--warning-bg); color: var(--warning-amber); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </div>
+
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-heading); margin-bottom: 0.5rem;">
+                        Meal Claimed!
+                    </h3>
+
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+                        <strong>{{ card.claimer.name if card.claimer else 'A fellow student' }}</strong> has claimed this meal card. When they arrive, confirm handover to finish.
+                    </p>
+
+                    <a href="{{ url_for('verify_claim', claim_token=card.claim_token) }}" class="btn-dashboard-primary btn-w-full" style="padding: 0.75rem;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        <span>Verify & Complete Handover</span>
+                    </a>
+                </div>
+
+            <!-- SCENARIO 3: Card is completed -->
+            {% elif card.status == 'completed' %}
+                <div class="modern-card" style="text-align: center;">
+                    <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--success-bg); color: var(--success-green); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    </div>
+                    <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text-heading); margin-bottom: 0.35rem;">Handover Completed</h3>
+                    <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">
+                        This meal was successfully shared and confirmed on {{ card.completed_at.strftime('%b %d, %Y') if card.completed_at else 'recently' }}. Thank you for preventing food waste!
+                    </p>
+                    <a href="{{ url_for('dashboard') }}" class="btn-dashboard-secondary btn-w-full">
+                        <span>Browse Other Meals</span>
+                    </a>
+                </div>
+
+            <!-- SCENARIO 4: Card is expired -->
+            {% elif card.status == 'expired' %}
+                <div class="modern-card" style="text-align: center;">
+                    <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--error-bg); color: var(--error-red); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    </div>
+                    <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text-heading); margin-bottom: 0.35rem;">Meal Posting Expired</h3>
+                    <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">
+                        This meal was not claimed before the pickup deadline.
+                    </p>
+                    <a href="{{ url_for('dashboard') }}" class="btn-dashboard-secondary btn-w-full">
+                        <span>Back to Dashboard</span>
+                    </a>
+                </div>
+
+            <!-- SCENARIO 5: Available meal card general info box -->
+            {% else %}
+                <div class="modern-card">
+                    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-heading); margin-bottom: 0.85rem;">
+                        Handover Instructions
+                    </h3>
+                    <ul style="padding-left: 1.25rem; font-size: 0.875rem; color: var(--text-body); line-height: 1.6; margin: 0;">
+                        <li>Claiming reserves the portion in your name.</li>
+                        <li>A secure QR code is generated for verification.</li>
+                        <li>Show your QR code to the poster upon meeting.</li>
+                        <li>Pick up food before the scheduled expiry time.</li>
+                    </ul>
+                </div>
+            {% endif %}
+
+        </aside>
+
+    </div>
+</div>
+
+<script>
+function copyVerifyUrl(url, btn) {
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(() => {
+            const span = document.getElementById('copy-btn-text');
+            if (span) span.textContent = 'Link Copied to Clipboard!';
+            setTimeout(() => {
+                if (span) span.textContent = 'Copy Verification Link';
+            }, 3000);
+        }).catch(err => {
+            console.error('Could not copy text: ', err);
+            prompt('Copy this verification URL:', url);
+        });
+    } else {
+        prompt('Copy this verification URL:', url);
+    }
+}
+</script>
+{% endblock %}

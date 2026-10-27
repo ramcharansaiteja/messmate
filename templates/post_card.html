@@ -1,0 +1,417 @@
+{% extends "base_dashboard.html" %}
+
+{% block title %}Post a Meal Card - MessMate{% endblock %}
+
+{% block greeting %}
+Share Surplus Food 🍲
+{% endblock %}
+
+{% block greeting_subtitle %}
+Help fellow students by sharing unused mess meals and reducing campus food waste
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 760px; margin: 0 auto;">
+    
+    <!-- Page Header & Instructions -->
+    <header class="card-header-styled" style="border-bottom: none; margin-bottom: 1.25rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+                <h1 style="font-size: 1.75rem; font-weight: 700; color: var(--text-heading); margin-bottom: 0.35rem;">Post a Meal Card</h1>
+                <p style="color: var(--text-muted); font-size: 0.95rem;">Enter details about the meal you want to share with other hostel residents.</p>
+            </div>
+            <a href="{{ url_for('dashboard') }}" class="btn-dashboard-secondary" style="font-size: 0.875rem; padding: 0.5rem 1rem;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                <span>Back to Dashboard</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Post Meal Form Card -->
+    <section class="modern-card" style="padding: 2.25rem;">
+        <form id="post-meal-form" method="POST" action="{{ url_for('post_card') }}" enctype="multipart/form-data" novalidate>
+            <!-- CSRF Protection -->
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            <!-- Meal Title -->
+            <div class="form-group">
+                <label for="title" class="form-label">
+                    Meal Title <span class="required-star" aria-hidden="true">*</span>
+                </label>
+                <input type="text"
+                       id="title"
+                       name="title"
+                       class="form-control"
+                       placeholder="e.g. 2 Paneer Butter Masala Rotis & Rice"
+                       maxlength="100"
+                       required
+                       autofocus
+                       value="{{ form.title if form else '' }}"
+                       aria-describedby="title-hint title-error">
+                <div class="form-hint" id="title-hint">
+                    <span>Be descriptive so students know what food is available.</span>
+                    <span id="title-counter">0 / 100</span>
+                </div>
+                <div class="form-error" id="title-error">Please enter a valid title (3 to 100 characters).</div>
+            </div>
+
+            <!-- Meal Type & Quantity (Two columns) -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;" class="form-row-2col">
+                <!-- Meal Type Dropdown -->
+                <div class="form-group">
+                    <label for="meal_type" class="form-label">
+                        Meal Type <span class="required-star" aria-hidden="true">*</span>
+                    </label>
+                    <select id="meal_type" name="meal_type" class="form-control" required aria-describedby="meal-type-error">
+                        <option value="" disabled {% if not form or not form.meal_type %}selected{% endif %}>Select Meal Type</option>
+                        <option value="breakfast" {% if form and form.meal_type == 'breakfast' %}selected{% endif %}>🍳 Breakfast</option>
+                        <option value="lunch" {% if form and form.meal_type == 'lunch' %}selected{% endif %}>🍱 Lunch</option>
+                        <option value="dinner" {% if form and form.meal_type == 'dinner' %}selected{% endif %}>🍲 Dinner</option>
+                        <option value="snack" {% if form and form.meal_type == 'snack' %}selected{% endif %}>🥪 Snack / Beverage</option>
+                    </select>
+                    <div class="form-error" id="meal-type-error">Please select a meal type.</div>
+                </div>
+
+                <!-- Quantity Available -->
+                <div class="form-group">
+                    <label for="quantity" class="form-label">
+                        Available Quantity (Portions) <span class="required-star" aria-hidden="true">*</span>
+                    </label>
+                    <input type="number"
+                           id="quantity"
+                           name="quantity"
+                           class="form-control"
+                           min="1"
+                           max="20"
+                           value="{{ form.quantity if form and form.quantity else '1' }}"
+                           required
+                           aria-describedby="quantity-hint quantity-error">
+                    <div class="form-hint" id="quantity-hint">
+                        <span>Number of servings/packs available.</span>
+                    </div>
+                    <div class="form-error" id="quantity-error">Quantity must be at least 1 portion.</div>
+                </div>
+            </div>
+
+            <!-- Pickup Location -->
+            <div class="form-group">
+                <label for="pickup_location" class="form-label">
+                    Pickup Location <span class="required-star" aria-hidden="true">*</span>
+                </label>
+                <input type="text"
+                       id="pickup_location"
+                       name="pickup_location"
+                       class="form-control"
+                       placeholder="e.g. Hostel Block B, Common Room / Mess Hall Table 4"
+                       maxlength="200"
+                       required
+                       value="{{ form.pickup_location if form else '' }}"
+                       aria-describedby="location-hint location-error">
+                <div class="form-hint" id="location-hint">
+                    <span>Specify hostel wing, floor, room or common area for handover.</span>
+                </div>
+                <div class="form-error" id="location-error">Please provide a pickup location (at least 3 characters).</div>
+            </div>
+
+            <!-- Available Until (Expiry Time) -->
+            <div class="form-group">
+                <label for="expiry_time" class="form-label">
+                    Available Until (Expiry Date & Time) <span class="required-star" aria-hidden="true">*</span>
+                </label>
+                <input type="datetime-local"
+                       id="expiry_time"
+                       name="expiry_time"
+                       class="form-control"
+                       required
+                       value="{{ form.expiry_time if form else '' }}"
+                       aria-describedby="expiry-hint expiry-error">
+                <div class="form-hint" id="expiry-hint">
+                    <span>When does this food expire or when do you leave the pickup location? Must be in the future.</span>
+                </div>
+                <div class="form-error" id="expiry-error">Expiry time must be set to a future date and time.</div>
+            </div>
+
+            <!-- Description (Optional with Character Counter) -->
+            <div class="form-group">
+                <label for="description" class="form-label">
+                    Description <span style="font-weight: 400; color: var(--text-muted); font-size: 0.8rem;">(Optional)</span>
+                </label>
+                <textarea id="description"
+                          name="description"
+                          class="form-control"
+                          rows="4"
+                          maxlength="500"
+                          placeholder="e.g. Freshly packed from tonight's mess dinner. Untouched vegetarian thali with 3 rotis, dal, and jeera rice. Please bring your own container if possible."
+                          aria-describedby="desc-hint">{{ form.description if form else '' }}</textarea>
+                <div class="form-hint" id="desc-hint">
+                    <span>Mention dietary details (Veg/Non-Veg), container requirements, or best-before notes.</span>
+                    <span id="desc-counter">0 / 500</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="qr_image" class="form-label">
+                    Meal QR Screenshot <span class="required-star" aria-hidden="true">*</span>
+                </label>
+                <input type="file"
+                       id="qr_image"
+                       name="qr_image"
+                       class="form-control"
+                       accept="image/png,image/jpeg,image/webp"
+                       required
+                       aria-describedby="qr-image-hint qr-image-error">
+                <div class="form-hint" id="qr-image-hint">
+                    <span>Upload a clear PNG, JPG, or WebP screenshot (up to 5 MB). It will be shown to the poster and meal claimant.</span>
+                </div>
+                <div class="form-error" id="qr-image-error">Please select a QR screenshot (PNG, JPG, or WebP).</div>
+                <img id="qr-image-preview" class="qr-upload-preview" alt="Selected QR screenshot preview" hidden>
+            </div>
+
+            <!-- Action Buttons Row -->
+            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                <a href="{{ url_for('dashboard') }}" class="btn-dashboard-secondary">
+                    Cancel
+                </a>
+                <button type="submit" id="submit-btn" class="btn-dashboard-primary" style="padding: 0.65rem 1.75rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                    <span>Post Meal Card</span>
+                </button>
+            </div>
+        </form>
+    </section>
+
+</div>
+
+<!-- Client-side Validation and Interaction Script -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('post-meal-form');
+    const titleInput = document.getElementById('title');
+    const titleCounter = document.getElementById('title-counter');
+    const titleError = document.getElementById('title-error');
+    
+    const mealTypeSelect = document.getElementById('meal_type');
+    const mealTypeError = document.getElementById('meal-type-error');
+    
+    const quantityInput = document.getElementById('quantity');
+    const quantityError = document.getElementById('quantity-error');
+    
+    const locationInput = document.getElementById('pickup_location');
+    const locationError = document.getElementById('location-error');
+    
+    const expiryInput = document.getElementById('expiry_time');
+    const expiryError = document.getElementById('expiry-error');
+    const qrImageInput = document.getElementById('qr_image');
+    const qrImageError = document.getElementById('qr-image-error');
+    const qrImagePreview = document.getElementById('qr-image-preview');
+    
+    const descTextarea = document.getElementById('description');
+    const descCounter = document.getElementById('desc-counter');
+
+    // Preset minimum datetime to now + 5 minutes
+    function updateMinExpiry() {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() + 5);
+        // Format to YYYY-MM-DDTHH:MM local string
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const minIso = `${year}-${month}-${day}T${hours}:${minutes}`;
+        expiryInput.min = minIso;
+
+        // If field is empty, set default to now + 2 hours
+        if (!expiryInput.value) {
+            const defTime = new Date();
+            defTime.setHours(defTime.getHours() + 2);
+            const defYear = defTime.getFullYear();
+            const defMonth = String(defTime.getMonth() + 1).padStart(2, '0');
+            const defDay = String(defTime.getDate()).padStart(2, '0');
+            const defHours = String(defTime.getHours()).padStart(2, '0');
+            const defMinutes = String(defTime.getMinutes()).padStart(2, '0');
+            expiryInput.value = `${defYear}-${defMonth}-${defDay}T${defHours}:${defMinutes}`;
+        }
+    }
+    updateMinExpiry();
+
+    // Title Character Counter
+    function updateTitleCounter() {
+        const len = titleInput.value.length;
+        titleCounter.textContent = `${len} / 100`;
+    }
+    titleInput.addEventListener('input', () => {
+        updateTitleCounter();
+        if (titleInput.value.trim().length >= 3) {
+            titleError.style.display = 'none';
+            titleInput.style.borderColor = '';
+        }
+    });
+    updateTitleCounter();
+
+    // Description Character Counter
+    function updateDescCounter() {
+        const len = descTextarea.value.length;
+        descCounter.textContent = `${len} / 500`;
+        if (len >= 480) {
+            descCounter.style.color = 'var(--error-red)';
+        } else {
+            descCounter.style.color = 'var(--text-muted)';
+        }
+    }
+    descTextarea.addEventListener('input', updateDescCounter);
+    updateDescCounter();
+
+    // Live validation clears
+    mealTypeSelect.addEventListener('change', () => {
+        if (mealTypeSelect.value) {
+            mealTypeError.style.display = 'none';
+            mealTypeSelect.style.borderColor = '';
+        }
+    });
+
+    quantityInput.addEventListener('input', () => {
+        if (parseInt(quantityInput.value, 10) >= 1) {
+            quantityError.style.display = 'none';
+            quantityInput.style.borderColor = '';
+        }
+    });
+
+    locationInput.addEventListener('input', () => {
+        if (locationInput.value.trim().length >= 3) {
+            locationError.style.display = 'none';
+            locationInput.style.borderColor = '';
+        }
+    });
+
+    expiryInput.addEventListener('change', () => {
+        const chosen = new Date(expiryInput.value);
+        if (chosen > new Date()) {
+            expiryError.style.display = 'none';
+            expiryInput.style.borderColor = '';
+        }
+    });
+
+    qrImageInput.addEventListener('change', () => {
+        const file = qrImageInput.files[0];
+        qrImageError.style.display = file ? 'none' : 'block';
+        qrImageInput.style.borderColor = file ? '' : 'var(--error-red)';
+        if (file) {
+            qrImagePreview.src = URL.createObjectURL(file);
+            qrImagePreview.hidden = false;
+        } else {
+            qrImagePreview.removeAttribute('src');
+            qrImagePreview.hidden = true;
+        }
+    });
+
+    // Form Submission Validation
+    form.addEventListener('submit', (e) => {
+        let isValid = true;
+
+        // Validate Title
+        if (titleInput.value.trim().length < 3 || titleInput.value.trim().length > 100) {
+            titleError.style.display = 'block';
+            titleInput.style.borderColor = 'var(--error-red)';
+            isValid = false;
+        } else {
+            titleError.style.display = 'none';
+            titleInput.style.borderColor = '';
+        }
+
+        // Validate Meal Type
+        if (!mealTypeSelect.value) {
+            mealTypeError.style.display = 'block';
+            mealTypeSelect.style.borderColor = 'var(--error-red)';
+            isValid = false;
+        } else {
+            mealTypeError.style.display = 'none';
+            mealTypeSelect.style.borderColor = '';
+        }
+
+        // Validate Quantity
+        const qtyVal = parseInt(quantityInput.value, 10);
+        if (isNaN(qtyVal) || qtyVal < 1) {
+            quantityError.style.display = 'block';
+            quantityInput.style.borderColor = 'var(--error-red)';
+            isValid = false;
+        } else {
+            quantityError.style.display = 'none';
+            quantityInput.style.borderColor = '';
+        }
+
+        // Validate Location
+        if (locationInput.value.trim().length < 3) {
+            locationError.style.display = 'block';
+            locationInput.style.borderColor = 'var(--error-red)';
+            isValid = false;
+        } else {
+            locationError.style.display = 'none';
+            locationInput.style.borderColor = '';
+        }
+
+        // Validate Expiry Time
+        if (!expiryInput.value) {
+            expiryError.textContent = 'Please select an expiry date and time.';
+            expiryError.style.display = 'block';
+            expiryInput.style.borderColor = 'var(--error-red)';
+            isValid = false;
+        } else {
+            const selectedDate = new Date(expiryInput.value);
+            if (isNaN(selectedDate.getTime()) || selectedDate <= new Date()) {
+                expiryError.textContent = 'Expiry time must be set to a future date and time.';
+                expiryError.style.display = 'block';
+                expiryInput.style.borderColor = 'var(--error-red)';
+                isValid = false;
+            } else {
+                expiryError.style.display = 'none';
+                expiryInput.style.borderColor = '';
+            }
+        }
+
+        if (!qrImageInput.files.length) {
+            qrImageError.style.display = 'block';
+            qrImageInput.style.borderColor = 'var(--error-red)';
+            isValid = false;
+        } else {
+            qrImageError.style.display = 'none';
+            qrImageInput.style.borderColor = '';
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            // Scroll smoothly to first invalid field
+            const firstError = form.querySelector('.form-error[style*="display: block"]');
+            if (firstError) {
+                firstError.parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        } else {
+            // Disable button to prevent double submission
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin-animation" style="animation: spin 1s linear infinite;" aria-hidden="true">
+                    <line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line>
+                    <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+                    <line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line>
+                    <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+                </svg>
+                <span>Posting Meal...</span>
+            `;
+        }
+    });
+});
+</script>
+
+<style>
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+@media (max-width: 640px) {
+    .form-row-2col {
+        grid-template-columns: 1fr !important;
+        gap: 0 !important;
+    }
+}
+</style>
+{% endblock %}

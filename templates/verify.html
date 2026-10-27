@@ -1,0 +1,174 @@
+{% extends "base_dashboard.html" %}
+
+{% block title %}Verify Food Handover - MessMate{% endblock %}
+
+{% block greeting %}
+Food Handover Verification 🤝
+{% endblock %}
+
+{% block greeting_subtitle %}
+Confirm meal collection and finalize peer-to-peer food transfer
+{% endblock %}
+
+{% block content %}
+<div class="verify-page-container" style="max-width: 640px; margin: 1.5rem auto;">
+
+    <!-- =================================================================== -->
+    <!-- CASE 1: CARD IS CLAIMED (Awaiting Verification)                     -->
+    <!-- =================================================================== -->
+    {% if card and card.status == 'claimed' %}
+        <section class="modern-card" style="text-align: center; padding: 2.5rem 2rem;">
+            <div style="width: 68px; height: 68px; border-radius: 50%; background: var(--blue-light); color: var(--primary-blue); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    <polyline points="9 12 11 14 15 10"></polyline>
+                </svg>
+            </div>
+
+            <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--text-heading); margin-bottom: 0.5rem;">
+                Confirm Food Handover
+            </h1>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem;">
+                Please verify that the food has been safely handed over to the claiming student.
+            </p>
+
+            <!-- Meal Information Box -->
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; text-align: left; margin-bottom: 1.75rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <span class="meal-type-badge meal-type-{{ card.meal_type | lower }}">
+                        {{ card.meal_type | title }}
+                    </span>
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">
+                        Quantity: <strong>{{ card.quantity }} {{ 'portion' if card.quantity == 1 else 'portions' }}</strong>
+                    </span>
+                </div>
+
+                <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text-heading); margin-bottom: 0.5rem;">
+                    {{ card.title }}
+                </h3>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color); font-size: 0.875rem;">
+                    <div>
+                        <span style="color: var(--text-muted); display: block; font-size: 0.75rem; text-transform: uppercase;">Claimed By</span>
+                        <strong style="color: var(--text-heading); font-size: 0.95rem;">{{ card.claimer.name if card.claimer else 'Hostel Student' }}</strong>
+                    </div>
+                    <div>
+                        <span style="color: var(--text-muted); display: block; font-size: 0.75rem; text-transform: uppercase;">Posted By</span>
+                        <strong style="color: var(--text-heading); font-size: 0.95rem;">{{ card.poster.name if card.poster else 'Hostel Student' }}</strong>
+                    </div>
+                </div>
+
+                <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                    <span>Pickup Location: </span>
+                    <strong style="color: var(--text-body);">{{ card.pickup_location }}</strong>
+                </div>
+            </div>
+
+            <!-- Permission Check: Only the poster can complete verification -->
+            {% if current_user.is_authenticated and current_user.id == card.posted_by %}
+                <form method="POST" action="{{ url_for('verify_claim', claim_token=card.claim_token) }}" onsubmit="return confirm('Confirm handover now? Once verified, this transaction cannot be undone.');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                    <!-- Warning Alert -->
+                    <div style="background: var(--warning-bg); border: 1px solid #FDE68A; border-radius: 8px; padding: 0.85rem 1rem; text-align: left; margin-bottom: 1.5rem; display: flex; align-items: flex-start; gap: 0.65rem;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        <div style="font-size: 0.85rem; color: #92400E; line-height: 1.4;">
+                            <strong>Notice:</strong> This action cannot be undone. Clicking below confirms you have handed over the meal to {{ card.claimer.name if card.claimer else 'the claimer' }}.
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-dashboard-primary btn-w-full" style="padding: 0.85rem; font-size: 1.05rem;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        <span>Confirm Handover</span>
+                    </button>
+                </form>
+            {% else %}
+                <!-- Current user is NOT the poster (likely the claimer showing the token) -->
+                <div style="background: var(--blue-light); border: 1px solid var(--blue-light-border); border-radius: 8px; padding: 1rem; text-align: left; margin-bottom: 1.5rem;">
+                    <div style="display: flex; gap: 0.65rem; align-items: flex-start;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        <div style="font-size: 0.875rem; color: var(--text-body); line-height: 1.5;">
+                            Only the meal poster (<strong>{{ card.poster.name if card.poster else 'Hostel Poster' }}</strong>) can complete this verification. If you are collecting this meal, please ask the poster to scan your QR code or open this page on their phone.
+                        </div>
+                    </div>
+                </div>
+
+                <a href="{{ url_for('card_detail', card_id=card.id) }}" class="btn-dashboard-secondary btn-w-full">
+                    <span>Back to Meal Card</span>
+                </a>
+            {% endif %}
+        </section>
+
+    <!-- =================================================================== -->
+    <!-- CASE 2: CARD IS ALREADY COMPLETED                                  -->
+    <!-- =================================================================== -->
+    {% elif card and card.status == 'completed' %}
+        <section class="modern-card" style="text-align: center; padding: 3rem 2rem;">
+            <div style="width: 72px; height: 72px; border-radius: 50%; background: var(--success-bg); color: var(--success-green); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+            </div>
+
+            <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--text-heading); margin-bottom: 0.5rem;">
+                Already Verified!
+            </h1>
+
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+                This meal handover has already been confirmed and marked as completed.
+            </p>
+
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; margin-bottom: 2rem; text-align: left;">
+                <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-heading); margin-bottom: 0.35rem;">{{ card.title }}</h3>
+                <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+                    Completed on: <strong style="color: var(--success-green);">{{ card.completed_at.strftime('%b %d, %Y - %I:%M %p') if card.completed_at else 'Recently' }}</strong><br>
+                    Handed over between: <strong>{{ card.poster.name if card.poster else 'Poster' }}</strong> &amp; <strong>{{ card.claimer.name if card.claimer else 'Claimer' }}</strong>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="{{ url_for('dashboard') }}" class="btn-dashboard-primary">
+                    <span>Back to Dashboard</span>
+                </a>
+                <a href="{{ url_for('my_cards') }}" class="btn-dashboard-secondary">
+                    <span>View My Cards</span>
+                </a>
+            </div>
+        </section>
+
+    <!-- =================================================================== -->
+    <!-- CASE 3: INVALID OR EXPIRED VERIFICATION LINK                        -->
+    <!-- =================================================================== -->
+    {% else %}
+        <section class="modern-card" style="text-align: center; padding: 3rem 2rem;">
+            <div style="width: 72px; height: 72px; border-radius: 50%; background: var(--error-bg); color: var(--error-red); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+            </div>
+
+            <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--text-heading); margin-bottom: 0.5rem;">
+                Invalid Verification Link
+            </h1>
+
+            <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 440px; margin: 0 auto 2rem; line-height: 1.5;">
+                {% if card and card.status == 'available' %}
+                    This meal has not been claimed yet. Meals can only be verified after they are claimed by a student.
+                {% elif card and card.status == 'expired' %}
+                    This meal card has expired and cannot be verified.
+                {% else %}
+                    The verification token is invalid or no longer active. Please check the QR code or link and try again.
+                {% endif %}
+            </p>
+
+            <a href="{{ url_for('dashboard') }}" class="btn-dashboard-primary">
+                <span>Return to Dashboard</span>
+            </a>
+        </section>
+    {% endif %}
+
+</div>
+{% endblock %}
