@@ -9,10 +9,7 @@
         <!-- Brand Logo -->
         <div class="nav-brand-wrapper">
             <a href="{{ url_for('home') }}" class="nav-brand" aria-label="MessMate Home">
-                <div class="nav-logo-badge">
-                    <img src="{{ url_for('static', filename='images/messmate-logo.png') }}" alt="MessMate Logo" class="nav-logo-img">
-                </div>
-                <span class="nav-brand-text">Mess<span class="text-blue">Mate</span></span>
+                <img src="{{ url_for('static', filename='images/messmate-logo.png') }}" alt="MessMate Logo" class="nav-logo-img">
             </a>
         </div>
 
@@ -53,17 +50,17 @@
     <!-- Hero Section -->
     <section class="hero-section" id="hero">
         <div class="container hero-container">
-            <!-- Left Column: Copy & Actions -->
+            <!-- Hero copy appears on the right on desktop. -->
             <div class="hero-content">
                 <div class="hero-badge">
                     <span class="badge-dot"></span>
                     <span>Hostel Dining &amp; Food Sharing Network</span>
                 </div>
                 <h1 class="hero-title">
-                    Share Your Unused Meals, <span class="text-blue">Feed a Fellow Student</span>
+                    Connect to Your <span class="text-blue">Meal Partner</span>
                 </h1>
                 <p class="hero-subtitle">
-                    Heading out for the weekend or skipping hostel food? Don't let your prepaid meal credits go to waste. MessMate connects hostel residents to seamlessly exchange dining tokens through secure QR codes.
+                    Heading out for the weekend or skipping hostel food? Don't let your prepaid meal credits go to waste. MessMate connects hostel residents so they can share meal QR screenshots and pass unused portions along.
                 </p>
                 <div class="hero-actions">
                     <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg hero-cta">
@@ -81,7 +78,7 @@
                     </div>
                     <div class="perk-item">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        <span>Instant QR Verification at Mess Counters</span>
+                        <span>Meal QR Screenshots Available After Claim</span>
                     </div>
                     <div class="perk-item">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -90,44 +87,16 @@
                 </div>
             </div>
 
-            <!-- Right Column: Visual Composition -->
+            <!-- Person illustration appears on the left on desktop. -->
             <div class="hero-visual">
                 <div class="visual-glow-backdrop"></div>
-                <div class="hero-plate-composition">
-                    <!-- Central Plate Image with Shadow & Glow -->
-                    <div class="plate-wrapper">
-                        <img src="{{ url_for('static', filename='images/plate.png') }}" alt="Dining plate visual representation" class="hero-plate-img">
-                    </div>
-
-                    <!-- Cutlery Accents -->
-                    <div class="cutlery-accent cutlery-fork" aria-hidden="true">
-                        <img src="{{ url_for('static', filename='images/fork.png') }}" alt="" class="cutlery-img">
-                    </div>
-                    <div class="cutlery-accent cutlery-spoon" aria-hidden="true">
-                        <img src="{{ url_for('static', filename='images/spoon.png') }}" alt="" class="cutlery-img">
-                    </div>
-
-                    <!-- Floating Card: Active Meal -->
-                    <div class="floating-card floating-card-top" aria-hidden="true">
-                        <div class="floating-card-icon bg-blue-subtle">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
-                        </div>
-                        <div class="floating-card-text">
-                            <span class="floating-label">Dining Hall &bull; Dinner</span>
-                            <span class="floating-value text-green">Available to Claim</span>
-                        </div>
-                    </div>
-
-                    <!-- Floating Card: QR Verified -->
-                    <div class="floating-card floating-card-bottom" aria-hidden="true">
-                        <div class="floating-card-icon bg-green-subtle">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                        </div>
-                        <div class="floating-card-text">
-                            <span class="floating-label">QR Token Generated</span>
-                            <span class="floating-value">Verified at Mess Gate</span>
-                        </div>
-                    </div>
+                <div class="hero-illustration">
+                    <img src="{{ url_for('static', filename='images/meal-partner.png') }}" alt="Student using a phone" class="hero-partner-img">
+                    <img src="{{ url_for('static', filename='images/meal-partner-signature.png') }}" alt="Signature" class="hero-signature">
+                    <p class="hero-creator-credit">
+                        <span class="hero-creator-name">RAM CHARAN TEJ ADIMULAM</span>
+                        <span>: creator</span>
+                    </p>
                 </div>
             </div>
         </div>
@@ -186,7 +155,7 @@
                     </p>
                 </article>
 
-                <!-- Step 3: Verify with QR -->
+                <!-- Step 3: Use the uploaded meal QR screenshot -->
                 <article class="step-card">
                     <div class="step-header">
                         <span class="step-number">03</span>
@@ -203,9 +172,9 @@
                             </svg>
                         </div>
                     </div>
-                    <h3 class="step-title">Verify with QR</h3>
+                    <h3 class="step-title">Show the Meal QR</h3>
                     <p class="step-desc">
-                        A unique dynamic QR verification code is generated. Show the QR at the mess entry or redemption desk for quick, contactless dining access.
+                        After claiming, view the poster's uploaded QR screenshot and show it at the mess entry or redemption desk. The poster can confirm the handover in MessMate.
                     </p>
                 </article>
             </div>
@@ -247,14 +216,14 @@
                     </p>
                 </article>
 
-                <!-- Benefit 3: Secure QR Verification -->
+                <!-- Benefit 3: Simple Meal Handover -->
                 <article class="benefit-card">
                     <div class="benefit-icon bg-blue-subtle">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                     </div>
-                    <h3 class="benefit-title">Secure QR Verification</h3>
+                    <h3 class="benefit-title">Simple Meal Handover</h3>
                     <p class="benefit-text">
-                        Single-use cryptographic tokens prevent double claims and confusion, ensuring legitimate redemptions that mess authorities can trust.
+                        Claim a meal, view the poster's uploaded QR screenshot, and let the poster confirm the handover in MessMate.
                     </p>
                 </article>
 
@@ -359,7 +328,7 @@
                     <h4 class="footer-heading">Guidelines</h4>
                     <ul class="footer-links">
                         <li><a href="#about">Responsible Sharing</a></li>
-                        <li><a href="#how-it-works">QR Verification FAQ</a></li>
+                        <li><a href="#how-it-works">Meal QR &amp; Handover FAQ</a></li>
                         <li><a href="#hero">Hostel Mess Rules</a></li>
                     </ul>
                 </div>

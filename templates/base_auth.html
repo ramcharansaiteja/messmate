@@ -8,9 +8,7 @@
         <!-- Brand Logo Header -->
         <header class="auth-logo-container">
             <a href="{{ url_for('home') }}" aria-label="MessMate Home">
-                <div class="auth-logo-badge">
-                    <img src="{{ url_for('static', filename='images/messmate-logo.png') }}" alt="MessMate Logo">
-                </div>
+                <img src="{{ url_for('static', filename='images/messmate-logo.png') }}" alt="MessMate Logo" class="auth-logo-img">
             </a>
             <h1 class="auth-heading">{% block auth_title %}Welcome to MessMate{% endblock %}</h1>
             <p class="auth-subheading">{% block auth_subtitle %}Campus peer-to-peer meal sharing platform{% endblock %}</p>

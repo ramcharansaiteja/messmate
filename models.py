@@ -68,7 +68,7 @@ class MealCard(db.Model):
     posted_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     claimed_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
 
-    # Verification token for QR code & handover verification
+    # Token used to verify and complete a meal handover
     claim_token = db.Column(db.String(64), unique=True, nullable=True, index=True)
 
     # Timestamps

@@ -207,7 +207,7 @@ Manage the meal cards you posted and track the meals you have claimed
                         </h3>
 
                         <p class="card-description" title="{{ card.description or 'No extra description provided.' }}">
-                            {{ card.description if card.description else 'Claimed meal reservation. Present your QR verification token to the poster.' }}
+                            {{ card.description if card.description else "Claimed meal reservation. View the poster's uploaded meal QR screenshot on the details page." }}
                         </p>
 
                         <!-- Metadata -->
@@ -251,7 +251,7 @@ Manage the meal cards you posted and track the meals you have claimed
                             {% if card.status == 'claimed' %}
                                 <a href="{{ url_for('card_detail', card_id=card.id) }}" class="btn-dashboard-primary" style="flex: 1; padding: 0.45rem 0.75rem; font-size: 0.85rem;">
                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                                    <span>View QR Code</span>
+                                    <span>View Meal QR Screenshot</span>
                                 </a>
                                 <a href="{{ url_for('card_detail', card_id=card.id) }}" class="btn-dashboard-secondary" style="padding: 0.45rem 0.75rem; font-size: 0.85rem;">
                                     <span>Details</span>

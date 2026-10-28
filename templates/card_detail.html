@@ -7,7 +7,7 @@ Meal Card Details 🍱
 {% endblock %}
 
 {% block greeting_subtitle %}
-Detailed information and handover verification token
+Meal details and the poster's uploaded meal QR screenshot
 {% endblock %}
 
 {% block content %}
@@ -185,45 +185,17 @@ Detailed information and handover verification token
                 </div>
             {% endif %}
             
-            <!-- SCENARIO 1: Card is claimed and current user is CLAIMER -->
+            <!-- Claimed card: claimer sees handover instructions, poster can confirm. -->
             {% if card.status == 'claimed' and current_user.is_authenticated and card.claimed_by == current_user.id %}
-                <div class="qr-code-card">
-                    <div style="display: inline-flex; padding: 0.4rem 0.8rem; background: var(--blue-light); color: var(--primary-blue); border-radius: 9999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 1rem;">
-                        Your Claim Token
-                    </div>
-
+                <div class="modern-card" style="text-align: center;">
                     <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-heading); margin-bottom: 0.5rem;">
-                        Verification QR Code
+                        Meal Claimed!
                     </h3>
-                    
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
-                        Show this QR code to <strong>{{ card.poster.name if card.poster else 'the meal poster' }}</strong> when picking up your food.
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0;">
+                        Show the uploaded meal QR screenshot above when collecting your food. The poster will confirm the handover in MessMate.
                     </p>
-
-                    {% if qr_code %}
-                        <div class="qr-image-wrapper">
-                            <img src="{{ qr_code }}" alt="QR Code for Meal Handover Verification">
-                        </div>
-                    {% endif %}
-
-                    <div style="margin-top: 1rem;">
-                        <span style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; display: block; margin-bottom: 0.25rem;">
-                            Direct Verification Link:
-                        </span>
-                        {% set verify_full_url = url_for('verify_claim', claim_token=card.claim_token, _external=True) %}
-                        <div class="verification-url-box" id="verify-url-text">{{ verify_full_url }}</div>
-                        <button type="button" class="btn-dashboard-secondary btn-w-full" onclick="copyVerifyUrl('{{ verify_full_url }}', this)" style="padding: 0.45rem; font-size: 0.825rem;">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                            <span id="copy-btn-text">Copy Verification Link</span>
-                        </button>
-                    </div>
-
-                    <div style="margin-top: 1.25rem; padding: 0.75rem; background: var(--warning-bg); border: 1px solid #FDE68A; border-radius: 8px; font-size: 0.8rem; color: #92400E; text-align: left;">
-                        <strong>Security Note:</strong> Do not share this QR code or link with anyone except the food poster upon receiving your meal portions.
-                    </div>
                 </div>
 
-            <!-- SCENARIO 2: Card is claimed and current user is POSTER -->
             {% elif card.status == 'claimed' and current_user.is_authenticated and card.posted_by == current_user.id %}
                 <div class="modern-card" style="text-align: center;">
                     <div style="width: 52px; height: 52px; border-radius: 50%; background: var(--warning-bg); color: var(--warning-amber); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
@@ -244,7 +216,7 @@ Detailed information and handover verification token
                     </a>
                 </div>
 
-            <!-- SCENARIO 3: Card is completed -->
+            <!-- Completed card -->
             {% elif card.status == 'completed' %}
                 <div class="modern-card" style="text-align: center;">
                     <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--success-bg); color: var(--success-green); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
@@ -259,7 +231,7 @@ Detailed information and handover verification token
                     </a>
                 </div>
 
-            <!-- SCENARIO 4: Card is expired -->
+            <!-- Expired card -->
             {% elif card.status == 'expired' %}
                 <div class="modern-card" style="text-align: center;">
                     <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--error-bg); color: var(--error-red); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
@@ -274,7 +246,7 @@ Detailed information and handover verification token
                     </a>
                 </div>
 
-            <!-- SCENARIO 5: Available meal card general info box -->
+            <!-- Available meal card instructions -->
             {% else %}
                 <div class="modern-card">
                     <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-heading); margin-bottom: 0.85rem;">
@@ -282,8 +254,8 @@ Detailed information and handover verification token
                     </h3>
                     <ul style="padding-left: 1.25rem; font-size: 0.875rem; color: var(--text-body); line-height: 1.6; margin: 0;">
                         <li>Claiming reserves the portion in your name.</li>
-                        <li>A secure QR code is generated for verification.</li>
-                        <li>Show your QR code to the poster upon meeting.</li>
+                        <li>The meal poster's uploaded QR screenshot is shown after you claim.</li>
+                        <li>Show the uploaded meal QR screenshot when collecting your food.</li>
                         <li>Pick up food before the scheduled expiry time.</li>
                     </ul>
                 </div>
@@ -294,22 +266,4 @@ Detailed information and handover verification token
     </div>
 </div>
 
-<script>
-function copyVerifyUrl(url, btn) {
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(url).then(() => {
-            const span = document.getElementById('copy-btn-text');
-            if (span) span.textContent = 'Link Copied to Clipboard!';
-            setTimeout(() => {
-                if (span) span.textContent = 'Copy Verification Link';
-            }, 3000);
-        }).catch(err => {
-            console.error('Could not copy text: ', err);
-            prompt('Copy this verification URL:', url);
-        });
-    } else {
-        prompt('Copy this verification URL:', url);
-    }
-}
-</script>
 {% endblock %}

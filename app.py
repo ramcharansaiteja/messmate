@@ -1,7 +1,5 @@
 import os
-import io
 import re
-import base64
 import secrets
 from io import BytesIO
 from datetime import datetime, timedelta
@@ -16,7 +14,6 @@ from flask_login import (
     LoginManager, login_user, logout_user,
     login_required, current_user
 )
-import qrcode
 from PIL import Image, ImageFilter, UnidentifiedImageError
 from sqlalchemy import inspect, text
 
@@ -54,27 +51,6 @@ def load_user(user_id):
 # -------------------------------------------------------------------------
 # Helper Functions
 # -------------------------------------------------------------------------
-
-def generate_qr_code(data):
-    """Generate a base64 encoded PNG data URI for a given URL or text."""
-    try:
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_M,
-            box_size=8,
-            border=2,
-        )
-        qr.add_data(data)
-        qr.make(fit=True)
-        img = qr.make_image(fill_color="#000000", back_color="#ffffff")
-        buf = io.BytesIO()
-        img.save(buf, format="PNG")
-        b64_data = base64.b64encode(buf.getvalue()).decode("utf-8")
-        return f"data:image/png;base64,{b64_data}"
-    except Exception as e:
-        app.logger.error(f"Error generating QR code: {e}")
-        return None
-
 
 def save_qr_image(upload):
     """Validate and save a meal QR image and its blurred public preview."""
@@ -376,7 +352,7 @@ def post_card():
             flash(str(error), "danger")
             return render_template("post_card.html", form=request.form), 400
 
-        # Unique token for verification & QR generation
+        # Unique token for handover verification
         claim_token = secrets.token_urlsafe(32)
 
         card = MealCard(
@@ -499,20 +475,14 @@ def claim_card(card_id):
 @app.route("/card/<int:card_id>")
 @login_required
 def card_detail(card_id):
-    """View details of a specific meal card, including QR verification code."""
+    """View details of a meal card, including its uploaded meal QR screenshot."""
     card = MealCard.query.get_or_404(card_id)
 
     # Check if expired
     if card.is_expired():
         db.session.commit()
 
-    # Generate QR code encoding the verification link
-    qr_code_uri = None
-    if card.claim_token:
-        verify_url = url_for("verify_claim", claim_token=card.claim_token, _external=True)
-        qr_code_uri = generate_qr_code(verify_url)
-
-    return render_template("card_detail.html", card=card, qr_code=qr_code_uri)
+    return render_template("card_detail.html", card=card)
 
 
 @app.route("/meal-qr/<int:card_id>")

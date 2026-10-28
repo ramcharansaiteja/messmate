@@ -1,5 +1,5 @@
 Flask
 Flask-SQLAlchemy
 Flask-Login
-qrcode[pil]
+Pillow
 gunicorn; sys_platform != "win32"

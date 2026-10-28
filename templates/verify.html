@@ -88,7 +88,7 @@ Confirm meal collection and finalize peer-to-peer food transfer
                     <div style="display: flex; gap: 0.65rem; align-items: flex-start;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                         <div style="font-size: 0.875rem; color: var(--text-body); line-height: 1.5;">
-                            Only the meal poster (<strong>{{ card.poster.name if card.poster else 'Hostel Poster' }}</strong>) can complete this verification. If you are collecting this meal, please ask the poster to scan your QR code or open this page on their phone.
+                            Only the meal poster (<strong>{{ card.poster.name if card.poster else 'Hostel Poster' }}</strong>) can complete this verification. If you are collecting this meal, ask the poster to confirm the handover from their meal card.
                         </div>
                     </div>
                 </div>
@@ -160,7 +160,7 @@ Confirm meal collection and finalize peer-to-peer food transfer
                 {% elif card and card.status == 'expired' %}
                     This meal card has expired and cannot be verified.
                 {% else %}
-                    The verification token is invalid or no longer active. Please check the QR code or link and try again.
+                    The verification link is invalid or no longer active. Please check the link and try again.
                 {% endif %}
             </p>
 
